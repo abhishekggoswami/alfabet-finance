@@ -1,0 +1,351 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --background: #1B5E5E;
+  --foreground: #ffffff;
+  --card: #2B7A7A;
+  --card-foreground: #ffffff;
+  --popover: #1B5E5E;
+  --popover-foreground: #ffffff;
+  --primary: #1B5E5E;
+  --primary-foreground: #ffffff;
+  --secondary: #2B7A7A;
+  --secondary-foreground: #ffffff;
+  --muted: #3A9B9B;
+  --muted-foreground: rgba(255, 255, 255, 0.7);
+  --accent: #D4AF37;
+  --accent-foreground: #1a1a1a;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: rgba(255, 255, 255, 0.2);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: #D4AF37;
+  --chart-1: #1B5E5E;
+  --chart-2: #2B7A7A;
+  --chart-3: #D4AF37;
+  --chart-4: #3A9B9B;
+  --chart-5: #4CB5B5;
+  --radius: 0.625rem;
+  --sidebar: #2B7A7A;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #1B5E5E;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #3A9B9B;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgba(255, 255, 255, 0.2);
+  --sidebar-ring: #D4AF37;
+}
+
+@theme inline {
+  --font-sans: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'Geist Mono', 'Geist Mono Fallback';
+  --font-serif: var(--font-playfair), 'Playfair Display', serif;
+  --font-display: var(--font-playfair), 'Playfair Display', serif;
+  --font-signature: var(--font-signature), 'Pinyon Script', cursive;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Course hero marquee animations */
+@keyframes marqueeFwd {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes marqueeRev {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
+}
+
+/* 3-row marquee depth container */
+.marquee-depth-container {
+  perspective: 600px;
+  perspective-origin: 50% 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+}
+
+/* Row depth classes — row 0 (top) recedes furthest back */
+.marquee-row-back {
+  /* Back row: smallest apparent size, dimmest shadow */
+  transform: translateZ(-180px) scale(0.72);
+  transform-origin: center center;
+  text-shadow:
+    0 0 60px rgba(255,255,255,0.06),
+    0 4px 24px rgba(0,0,0,0.55);
+  filter: blur(0.4px);
+}
+
+/* Row 1 (center) comes closest to the viewer */
+.marquee-row-front {
+  transform: translateZ(60px) scale(1.08);
+  transform-origin: center center;
+  text-shadow:
+    0 0 80px rgba(255,255,255,0.18),
+    0 6px 32px rgba(0,0,0,0.7),
+    0 2px 8px rgba(0,0,0,0.5);
+  filter: none;
+}
+
+/* Row 2 (bottom) sits at mid depth */
+.marquee-row-mid {
+  transform: translateZ(-60px) scale(0.88);
+  transform-origin: center center;
+  text-shadow:
+    0 0 50px rgba(255,255,255,0.10),
+    0 4px 20px rgba(0,0,0,0.6);
+  filter: blur(0.2px);
+}
+
+/* Hero section float animations */
+@keyframes floatLeft {
+  0%, 100% { transform: translateY(-50%) translateX(0); }
+  50% { transform: translateY(-50%) translateX(12px); }
+}
+@keyframes floatRight {
+  0%, 100% { transform: translateY(-50%) translateX(0); }
+  50% { transform: translateY(-50%) translateX(-10px); }
+}
+@keyframes floatNote1 {
+  0%, 100% { transform: rotate(-15deg) scaleX(-1) translateY(0); }
+  30% { transform: rotate(-12deg) scaleX(-1) translateY(-8px); }
+  70% { transform: rotate(-17deg) scaleX(-1) translateY(5px); }
+}
+@keyframes floatNote2 {
+  0%, 100% { transform: rotate(6deg) translateY(0); }
+  40% { transform: rotate(9deg) translateY(-10px); }
+  60% { transform: rotate(4deg) translateY(3px); }
+}
+
+/* Hide scrollbar for horizontal scroll */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Nav underline hover effect */
+.nav-underline {
+  width: 0%;
+  opacity: 0;
+  transition: width 0.22s cubic-bezier(0.4,0,0.2,1), opacity 0.18s ease;
+}
+.nav-underline--active {
+  width: 100%;
+  opacity: 1;
+}
+.nav-link:hover .nav-underline:not(.nav-underline--active) {
+  width: 60%;
+  opacity: 1;
+}
+
+/* Logo sparkle animation */
+@keyframes sparkle-pop {
+  0%   { transform: scale(0) rotate(0deg);   opacity: 0; }
+  30%  { transform: scale(1.4) rotate(45deg); opacity: 1; }
+  60%  { transform: scale(0.8) rotate(90deg); opacity: 0.7; }
+  100% { transform: scale(0) rotate(135deg);  opacity: 0; }
+}
+.logo-sparkle {
+  animation: sparkle-pop 2.4s ease-in-out infinite;
+  transform-origin: center;
+}
+
+/* Creative underline styles for headings */
+.underline-wave {
+  position: relative;
+  display: inline-block;
+}
+.underline-wave::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 100%;
+  height: 6px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 4'%3E%3Cpath d='M0 2 Q5 0 10 2 T20 2' stroke='%23D4AF37' stroke-width='1.5' fill='none'/%3E%3C/svg%3E") repeat-x;
+  background-size: 20px 6px;
+}
+
+.underline-brush {
+  position: relative;
+  display: inline-block;
+}
+.underline-brush::after {
+  content: '';
+  position: absolute;
+  left: -5%;
+  bottom: -2px;
+  width: 110%;
+  height: 8px;
+  background: linear-gradient(90deg, transparent 0%, #D4AF37 10%, #D4AF37 90%, transparent 100%);
+  opacity: 0.35;
+  transform: skewX(-12deg);
+  border-radius: 4px;
+}
+
+.underline-gradient {
+  position: relative;
+  display: inline-block;
+}
+.underline-gradient::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, #1B5E5E 0%, #D4AF37 50%, #1B5E5E 100%);
+  border-radius: 2px;
+}
+
+.underline-dots {
+  position: relative;
+  display: inline-block;
+}
+.underline-dots::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -8px;
+  width: 100%;
+  height: 4px;
+  background: radial-gradient(circle, #D4AF37 1.5px, transparent 1.5px);
+  background-size: 10px 4px;
+}
+
+.underline-double {
+  position: relative;
+  display: inline-block;
+}
+.underline-double::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(to bottom, #1B5E5E 0px, #1B5E5E 2px, transparent 2px, transparent 4px, #D4AF37 4px, #D4AF37 6px);
+}
+
+/* Quote banner — Warren Buffett continuous animations */
+@keyframes buffettFloat {
+  0%, 100% { transform: translateY(0px) rotate(-1deg); }
+  50%       { transform: translateY(-14px) rotate(0.6deg); }
+}
+@keyframes haloBreath {
+  0%, 100% { opacity: 0.12; transform: scale(1); }
+  50%       { opacity: 0.24; transform: scale(1.07); }
+}
+@keyframes goldShimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+.buffett-float {
+  animation: buffettFloat 5s ease-in-out infinite;
+}
+.halo-breath {
+  animation: haloBreath 5s ease-in-out infinite;
+}
+.gold-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(212,175,55,0) 0%,
+    rgba(212,175,55,0.45) 50%,
+    rgba(212,175,55,0) 100%
+  );
+  background-size: 400px 100%;
+  animation: goldShimmer 3.5s linear infinite;
+}
+
+/* BSRRA section — diagonal square grid drift */
+@keyframes gridDrift {
+  0%   { background-position: 0px 0px; }
+  100% { background-position: 40px 40px; }
+}
+.bsrra-grid-bg {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.038) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.038) 1px, transparent 1px);
+  background-size: 40px 40px;
+  animation: gridDrift 10s linear infinite;
+  pointer-events: none;
+}
+
+/* BSRRA card bg animations — all CSS, no JS, GPU-composited */
+@keyframes candlePulse {
+  0%, 100% { opacity: 0.55; }
+  50%       { opacity: 0.85; }
+}
+@keyframes waveDrift {
+  0%   { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: -320; }
+}
+@keyframes gridFade {
+  0%, 100% { opacity: 0.5; }
+  50%       { opacity: 0.8; }
+}
+@keyframes goldGlow {
+  0%, 100% { opacity: 0.55; }
+  50%       { opacity: 0.90; }
+}
+.anim-candle  { animation: candlePulse 3.2s ease-in-out infinite; }
+.anim-wave    { stroke-dasharray: 320; animation: waveDrift 6s linear infinite; }
+.anim-grid    { animation: gridFade 4s ease-in-out infinite; }
+.anim-gold    { animation: goldGlow 3.5s ease-in-out infinite; }
+
+@keyframes marqueeLeft {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-33.333%); }
+}
