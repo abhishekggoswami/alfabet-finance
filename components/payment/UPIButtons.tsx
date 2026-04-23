@@ -23,7 +23,7 @@ const UPI_APPS = [
     name: "Paytm",
     logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/download-removebg-preview-pNkpXajTdQOFfBw79ivxqqsT1u8e8a.png",
     bg: "#f0f4ff",
-    scheme: "paytmqr",
+    scheme: "paytm",
   },
   {
     name: "BHIM",
@@ -44,11 +44,11 @@ export default function UPIButtons({ upiLink }: UPIButtonsProps) {
     const tn = upiParams.get("tn")
 
     // Build app-specific URL with the appropriate scheme
-    // Different apps use different URL structures
+    // Each app uses its native scheme to open directly
     if (app.scheme === "phonepe") {
-      return `upi://pay?pa=${pa}&pn=${pn}&am=${am}&cu=${cu}&tn=${tn}&app=phonepe`
-    } else if (app.scheme === "paytmqr") {
-      return `upi://pay?pa=${pa}&pn=${pn}&am=${am}&cu=${cu}&tn=${tn}&app=paytm`
+      return `phonepe://upi/pay?pa=${pa}&pn=${pn}&am=${am}&cu=${cu}&tn=${tn}`
+    } else if (app.scheme === "paytm") {
+      return `paytm://pay?pa=${pa}&pn=${pn}&am=${am}&cu=${cu}&tn=${tn}`
     } else if (app.scheme === "tez") {
       return `tez://upi/pay?pa=${pa}&pn=${pn}&am=${am}&cu=${cu}&tn=${tn}`
     } else {
