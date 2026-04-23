@@ -44,7 +44,17 @@ export default function UPIButtons({ upiLink }: UPIButtonsProps) {
     const tn = upiParams.get("tn")
 
     // Build app-specific URL with the appropriate scheme
-    return `${app.scheme}://pay?pa=${pa}&pn=${pn}&am=${am}&cu=${cu}&tn=${tn}`
+    // Different apps use different URL structures
+    if (app.scheme === "phonepe") {
+      return `upi://pay?pa=${pa}&pn=${pn}&am=${am}&cu=${cu}&tn=${tn}&app=phonepe`
+    } else if (app.scheme === "paytmqr") {
+      return `upi://pay?pa=${pa}&pn=${pn}&am=${am}&cu=${cu}&tn=${tn}&app=paytm`
+    } else if (app.scheme === "tez") {
+      return `tez://upi/pay?pa=${pa}&pn=${pn}&am=${am}&cu=${cu}&tn=${tn}`
+    } else {
+      // BHIM and default UPI
+      return `upi://pay?pa=${pa}&pn=${pn}&am=${am}&cu=${cu}&tn=${tn}`
+    }
   }
 
   return (
@@ -77,3 +87,4 @@ export default function UPIButtons({ upiLink }: UPIButtonsProps) {
     </div>
   )
 }
+
