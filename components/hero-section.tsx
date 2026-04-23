@@ -674,7 +674,7 @@ export function HeroSection() {
             }}
           >
             <a
-              href="#courses"
+              href="/courses"
               className="font-sans font-bold text-[11px] px-7 py-3.5 rounded uppercase tracking-[0.15em] text-center transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg active:scale-95"
               style={{
                 background: "linear-gradient(135deg, #1B5E5E 0%, #0F4040 100%)",

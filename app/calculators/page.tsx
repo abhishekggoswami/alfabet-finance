@@ -19,6 +19,9 @@ const formatYAxisValue = (value) => {
 export default function CalculatorsPage() {
   const [activeCalculator, setActiveCalculator] = useState(0)
 
+  const handleCalculatorClick = (idx: number, name: string) => {
+  setActiveCalculator(idx)
+}
   const calculators = [
     {
       name: 'Future Value Calculator',
@@ -505,41 +508,60 @@ function SIPCalculator() {
 
   const currencySymbol = currency === 'INR' ? '₹' : '$'
 
-  const calculateSIP = () => {
-    const sa = sipAmount === '' ? 0 : Number(sipAmount)
-    const r = rate === '' ? 0 : Number(rate)
-    const y = years === '' ? 0 : Number(years)
-    
-    const monthlyRate = r / 12 / 100
-    const n = frequency === 'monthly' ? y * 12 : y * 4
-    const fv = sa * (((Math.pow(1 + monthlyRate, n) - 1) / monthlyRate) * (1 + monthlyRate))
-    const totalInvestment = sa * n
-    return { fv, totalInvestment, n }
+const calculateSIP = () => {
+  const sa = sipAmount === '' ? 0 : Number(sipAmount)
+  const r = rate === '' ? 0 : Number(rate)
+  const y = years === '' ? 0 : Number(years)
+  
+  if (sa <= 0 || y <= 0) {
+    return { fv: 0, totalInvestment: 0, n: 0 }
   }
+  
+  const monthlyRate = r / 12 / 100
+  const n = frequency === 'monthly' ? y * 12 : y * 4
+  let fv = 0
+  
+  if (monthlyRate === 0 || n === 0) {
+    fv = sa * n
+  } else {
+    fv = sa * (((Math.pow(1 + monthlyRate, n) - 1) / monthlyRate) * (1 + monthlyRate))
+  }
+  
+  const totalInvestment = sa * n
+  return { fv: isNaN(fv) ? 0 : fv, totalInvestment, n }
+}
 
-  const { fv, totalInvestment, n } = calculateSIP()
-
-  const generateSIPData = () => {
-    const sa = sipAmount === '' ? 0 : Number(sipAmount)
-    const r = rate === '' ? 0 : Number(rate)
-    const y = years === '' ? 0 : Number(years)
-    
-    const monthlyRate = r / 12 / 100
-    const months = frequency === 'monthly' ? y * 12 : y * 4
-    let value = 0
-    const data = []
-    
-    for (let month = 0; month <= months; month += Math.ceil(months / 15)) {
+const generateSIPData = () => {
+  const sa = sipAmount === '' ? 0 : Number(sipAmount)
+  const r = rate === '' ? 0 : Number(rate)
+  const y = years === '' ? 0 : Number(years)
+  
+  if (sa <= 0 || y <= 0) {
+    return [{ month: 0, value: 0, invested: 0 }]
+  }
+  
+  const monthlyRate = r / 12 / 100
+  const months = frequency === 'monthly' ? y * 12 : y * 4
+  let value = 0
+  const data = []
+  const step = Math.max(1, Math.ceil(months / 15))
+  
+  for (let month = 0; month <= months; month += step) {
+    if (monthlyRate === 0 || months === 0) {
+      value = sa * month
+    } else {
       value = sa * (((Math.pow(1 + monthlyRate, month) - 1) / monthlyRate) * (1 + monthlyRate))
-      data.push({ 
-        month: Math.round(month), 
-        value: Math.round(value),
-        invested: sa * month
-      })
     }
-    return data
+    const roundedValue = isNaN(value) ? 0 : Math.round(value)
+    data.push({ 
+      month: Math.round(month), 
+      value: roundedValue,
+      invested: sa * month
+    })
   }
-
+  return data.length > 0 ? data : [{ month: 0, value: 0, invested: 0 }]
+}
+const { fv, totalInvestment, n } = calculateSIP()
   const sipData = generateSIPData()
 
   return (
@@ -621,7 +643,7 @@ function SIPCalculator() {
           </div>
           <div className="p-6 rounded-lg" style={{ background: 'linear-gradient(135deg, #1B5E5E 0%, #2B7A7A 100%)' }}>
             <p className="text-sm text-white opacity-80 mb-1">Future Value</p>
-            <p className="text-2xl font-bold text-white">{currencySymbol}{fv.toLocaleString('en-IN')}</p>
+            <p className="text-2xl font-bold text-white">{currencySymbol}{isNaN(fv) ? 0 : fv.toLocaleString('en-IN')}</p>
           </div>
         </div>
       </div>
@@ -679,40 +701,59 @@ function GoalSIPCalculator() {
   const currencySymbol = currency === 'INR' ? '₹' : '$'
 
   const calculateMonthlySIP = () => {
-    const ga = goalAmount === '' ? 0 : Number(goalAmount)
-    const y = years === '' ? 0 : Number(years)
-    const r = rate === '' ? 0 : Number(rate)
-    
-    const monthlyRate = r / 12 / 100
-    const n = y * 12
-    const monthlyPayment = ga / (((Math.pow(1 + monthlyRate, n) - 1) / monthlyRate) * (1 + monthlyRate))
-    const totalInvestment = monthlyPayment * n
-    return { monthlyPayment, totalInvestment }
+  const ga = goalAmount === '' ? 0 : Number(goalAmount)
+  const y = years === '' ? 0 : Number(years)
+  const r = rate === '' ? 0 : Number(rate)
+  
+  if (ga <= 0 || y <= 0) {
+    return { monthlyPayment: 0, totalInvestment: 0 }
   }
+  
+  const monthlyRate = r / 12 / 100
+  const n = y * 12
+  let monthlyPayment = 0
+  
+  if (monthlyRate === 0 || n === 0) {
+    monthlyPayment = ga / n
+  } else {
+    monthlyPayment = ga / (((Math.pow(1 + monthlyRate, n) - 1) / monthlyRate) * (1 + monthlyRate))
+  }
+  
+  const totalInvestment = monthlyPayment * n
+  return { monthlyPayment: isNaN(monthlyPayment) ? 0 : monthlyPayment, totalInvestment: isNaN(totalInvestment) ? 0 : totalInvestment }
+}
 
-  const { monthlyPayment, totalInvestment } = calculateMonthlySIP()
-
-  const generateGoalData = () => {
-    const ga = goalAmount === '' ? 0 : Number(goalAmount)
-    const y = years === '' ? 0 : Number(years)
-    const r = rate === '' ? 0 : Number(rate)
-    
-    const monthlyRate = r / 12 / 100
-    const n = y * 12
-    let value = 0
-    const data = []
-    
-    for (let month = 0; month <= n; month += Math.ceil(n / 15)) {
+const generateGoalData = () => {
+  const ga = goalAmount === '' ? 0 : Number(goalAmount)
+  const y = years === '' ? 0 : Number(years)
+  const r = rate === '' ? 0 : Number(rate)
+  
+  if (ga <= 0 || y <= 0) {
+    return [{ month: 0, value: 0, goal: 0 }]
+  }
+  
+  const monthlyRate = r / 12 / 100
+  const n = y * 12
+  let value = 0
+  const data = []
+  const step = Math.max(1, Math.ceil(n / 15))
+  
+  for (let month = 0; month <= n; month += step) {
+    if (monthlyRate === 0 || n === 0) {
+      value = monthlyPayment * month
+    } else {
       value = monthlyPayment * (((Math.pow(1 + monthlyRate, month) - 1) / monthlyRate) * (1 + monthlyRate))
-      data.push({ 
-        month: Math.round(month), 
-        value: Math.round(value),
-        goal: ga
-      })
     }
-    return data
+    const roundedValue = isNaN(value) ? 0 : Math.round(value)
+    data.push({ 
+      month: Math.round(month), 
+      value: roundedValue,
+      goal: ga
+    })
   }
-
+  return data.length > 0 ? data : [{ month: 0, value: 0, goal: 0 }]
+}
+const { monthlyPayment, totalInvestment } = calculateMonthlySIP()
   const goalData = generateGoalData()
 
   return (
@@ -790,11 +831,11 @@ function GoalSIPCalculator() {
         <div className="space-y-4">
           <div className="p-6 rounded-lg" style={{ background: '#f5f3f0' }}>
             <p className="text-sm text-gray-600 mb-1">Total Investment</p>
-            <p className="text-2xl font-bold" style={{ color: '#1B5E5E' }}>{currencySymbol}{totalInvestment.toLocaleString('en-IN')}</p>
+            <p className="text-2xl font-bold" style={{ color: '#1B5E5E' }}>{currencySymbol}{isNaN(totalInvestment) ? 0 : totalInvestment.toLocaleString('en-IN')}</p>
           </div>
           <div className="p-6 rounded-lg" style={{ background: 'linear-gradient(135deg, #D4AF37 0%, #C49B1F 100%)' }}>
             <p className="text-sm text-gray-800 mb-1">Monthly SIP Amount</p>
-            <p className="text-2xl font-bold text-gray-900">{currencySymbol}{monthlyPayment.toLocaleString('en-IN')}</p>
+            <p className="text-2xl font-bold text-gray-900">{currencySymbol}{isNaN(monthlyPayment) ? 0 : monthlyPayment.toLocaleString('en-IN')}</p>
           </div>
         </div>
       </div>
@@ -822,53 +863,70 @@ function PowerOfCompoundingCalculator() {
   const currencySymbol = currency === 'INR' ? '₹' : '$'
 
   const calculateCompounding = () => {
-    const s = salary === '' ? 0 : Number(salary)
-    const ip = investmentPercent === '' ? 0 : Number(investmentPercent)
-    const sg = salaryGrowth === '' ? 0 : Number(salaryGrowth)
-    const iy = investmentYears === '' ? 0 : Number(investmentYears)
-    const rr = returnRate === '' ? 0 : Number(returnRate)
+  const s = salary === '' ? 0 : Number(salary)
+  const ip = investmentPercent === '' ? 0 : Number(investmentPercent)
+  const sg = salaryGrowth === '' ? 0 : Number(salaryGrowth)
+  const iy = investmentYears === '' ? 0 : Number(investmentYears)
+  const rr = returnRate === '' ? 0 : Number(returnRate)
+
+  if (s <= 0 || ip <= 0 || iy <= 0) {
+    return { corpus: 0, totalInvested: 0, gains: 0 }
+  }
+
+  let corpus = 0
+  let totalInvested = 0
+  let annualInvestment = (s * ip) / 100
+
+  for (let year = 0; year < iy; year++) {
+    annualInvestment = annualInvestment * (1 + sg / 100)
+    corpus = (corpus + annualInvestment) * (1 + rr / 100)
+    totalInvested += annualInvestment
+  }
+
+  corpus = isNaN(corpus) ? 0 : corpus
+  totalInvested = isNaN(totalInvested) ? 0 : totalInvested
+  const gains = corpus - totalInvested
+
+  return { corpus, totalInvested, gains: isNaN(gains) ? 0 : gains }
+}
+
+const generateCompoundingData = () => {
+  const s = salary === '' ? 0 : Number(salary)
+  const ip = investmentPercent === '' ? 0 : Number(investmentPercent)
+  const sg = salaryGrowth === '' ? 0 : Number(salaryGrowth)
+  const iy = investmentYears === '' ? 0 : Number(investmentYears)
+  const rr = returnRate === '' ? 0 : Number(returnRate)
+
+  if (s <= 0 || ip <= 0 || iy <= 0) {
+    return [{ year: 0, corpus: 0, invested: 0 }]
+  }
+
+  const data = []
+  const step = Math.max(1, Math.ceil(iy / 15))
+
+  for (let year = 0; year <= iy; year += step) {
+    let corp = 0
+    let totalInv = 0
+    let annInv = (s * ip) / 100
     
-    let corpus = 0
-    let totalInvested = 0
-    let annualInvestment = (s * ip) / 100
-
-    for (let year = 0; year < iy; year++) {
-      annualInvestment = annualInvestment * (1 + sg / 100)
-      corpus = (corpus + annualInvestment) * (1 + rr / 100)
-      totalInvested += annualInvestment
+    for (let y = 0; y < year; y++) {
+      annInv = annInv * (1 + sg / 100)
+      corp = (corp + annInv) * (1 + rr / 100)
+      totalInv += annInv
     }
+    
+    corp = isNaN(corp) ? 0 : corp
+    totalInv = isNaN(totalInv) ? 0 : totalInv
 
-    return { corpus, totalInvested, gains: corpus - totalInvested }
+    data.push({
+      year: year,
+      corpus: Math.round(corp),
+      invested: Math.round(totalInv)
+    })
   }
-
-  const { corpus, totalInvested, gains } = calculateCompounding()
-
-  const generateCompoundingData = () => {
-    let corpusValue = 0
-    let totalInvestedValue = 0
-    let annualInvest = (salary * investmentPercent) / 100
-    const data = []
-
-    for (let year = 0; year <= investmentYears; year += Math.ceil(investmentYears / 15)) {
-      let corp = 0
-      let totalInv = 0
-      let annInv = (salary * investmentPercent) / 100
-      
-      for (let y = 0; y < year; y++) {
-        annInv = annInv * (1 + salaryGrowth / 100)
-        corp = (corp + annInv) * (1 + returnRate / 100)
-        totalInv += annInv
-      }
-      
-      data.push({
-        year: year,
-        corpus: Math.round(corp),
-        invested: Math.round(totalInv)
-      })
-    }
-    return data
-  }
-
+  return data.length > 0 ? data : [{ year: 0, corpus: 0, invested: 0 }]
+}
+const { corpus, totalInvested, gains } = calculateCompounding()
   const compoundingData = generateCompoundingData()
 
   return (
@@ -946,15 +1004,15 @@ function PowerOfCompoundingCalculator() {
         <div className="space-y-4">
           <div className="p-6 rounded-lg" style={{ background: '#f5f3f0' }}>
             <p className="text-sm text-gray-600 mb-1">Total Invested</p>
-            <p className="text-2xl font-bold" style={{ color: '#1B5E5E' }}>{currencySymbol}{totalInvested.toLocaleString('en-IN')}</p>
+            <p className="text-2xl font-bold" style={{ color: '#1B5E5E' }}>{currencySymbol}{isNaN(totalInvested) ? 0 : totalInvested.toLocaleString('en-IN')}</p>
           </div>
           <div className="p-6 rounded-lg" style={{ background: 'linear-gradient(135deg, #D4AF37 0%, #C49B1F 100%)' }}>
             <p className="text-sm text-gray-800 mb-1">Gains</p>
-            <p className="text-2xl font-bold text-gray-900">{currencySymbol}{gains.toLocaleString('en-IN')}</p>
+            <p className="text-2xl font-bold text-gray-900">{currencySymbol}{isNaN(gains) ? 0 : gains.toLocaleString('en-IN')}</p>
           </div>
           <div className="p-6 rounded-lg" style={{ background: 'linear-gradient(135deg, #1B5E5E 0%, #2B7A7A 100%)' }}>
             <p className="text-sm text-white opacity-80 mb-1">Final Corpus</p>
-            <p className="text-2xl font-bold text-white">{currencySymbol}{corpus.toLocaleString('en-IN')}</p>
+            <p className="text-2xl font-bold text-white">{currencySymbol}{isNaN(corpus) ? 0 : corpus.toLocaleString('en-IN')}</p>
           </div>
         </div>
       </div>
