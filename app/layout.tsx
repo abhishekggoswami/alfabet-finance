@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     siteName: 'Alfabet Finance',
     images: [
       {
-        url: '/public/apple-icon.png',
+        url: '/apple-icon.png',
         width: 1200,
         height: 630,
         alt: 'Alfabet Finance - Financial Education Platform',
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Alfabet Finance | Expert Financial Education',
     description: 'Learn stock market investing and financial planning from Ex SEBI Registered Investment Advisor',
-    images: ['/public/apple-icon.png'],
+    images: ['/apple-icon.png'],
   },
   robots: {
     index: true,
